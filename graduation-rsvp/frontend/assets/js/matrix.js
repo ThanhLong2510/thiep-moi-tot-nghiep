@@ -1,26 +1,25 @@
 /**
  * matrix.js
- * Cyber Graduation Rain Background
+ * Celestial Sapphire Graduation Starlight Background
  * Features:
- * - Emoji characters: 🎓, 📜, 💻, 📚, ✨, ⚡, 👨‍💻, 👩‍💻
- * - Vertical falling streams with variable speeds and opacities
- * - Subtle mint / obsidian purple accents with fading trail
- * - Non-intrusive subtle background so text readability remains pristine
- * - Fully responsive with Retina / mobile performance throttling
+ * - Graduation & Celebration symbols: 🎓, 📜, ✨, 💙, ⭐, 🎉, 💫, 🕊️
+ * - Royal Sapphire & Azure shimmering trails with glowing stars
+ * - Non-intrusive subtle luxury backdrop ensuring crisp card readability
+ * - Fully responsive with Retina / mobile performance optimization
  */
 
 (function () {
   'use strict';
 
-  const CHARACTERS = ['🎓', '📜', '💻', '📚', '✨', '⚡', '👨‍💻', '👩‍💻'];
+  const CHARACTERS = ['🎓', '📜', '✨', '💙', '⭐', '🎉', '💫', '🕊️'];
   
-  // Neon accent colors for the trailing glow & highlights
+  // Royal Sapphire & Azure accent colors for the trailing glow & highlights
   const ACCENT_COLORS = [
-    { text: '#40c463', glow: 'rgba(64, 196, 99, 0.45)' }, // Mint
-    { text: '#b9a3e0', glow: 'rgba(185, 163, 224, 0.4)' },  // Soft Purple
-    { text: '#7952b3', glow: 'rgba(121, 82, 179, 0.4)' },  // Obsidian Purple
-    { text: '#d2f5dc', glow: 'rgba(210, 245, 220, 0.35)' }, // Pale Mint Glow
-    { text: '#58a6ff', glow: 'rgba(88, 166, 255, 0.35)' }   // GitHub Blue
+    { text: '#2563eb', glow: 'rgba(37, 99, 235, 0.45)' }, // Royal Sapphire Blue
+    { text: '#38bdf8', glow: 'rgba(56, 189, 248, 0.45)' }, // Electric Azure
+    { text: '#60a5fa', glow: 'rgba(96, 165, 250, 0.40)' }, // Soft Blue
+    { text: '#fbbf24', glow: 'rgba(251, 191, 36, 0.35)' }, // Royal Gold
+    { text: '#93c5fd', glow: 'rgba(147, 197, 253, 0.35)' } // Ice Azure
   ];
 
   class MatrixRain {
@@ -31,7 +30,7 @@
       this.ctx = this.canvas.getContext('2d');
       this.columns = [];
       this.fontSize = 26;
-      this.columnWidth = 32;
+      this.columnWidth = 34;
       this.isRunning = false;
       this.rafId = null;
       this.lastFrameTime = 0;
@@ -63,13 +62,13 @@
       // Adjust column spacing based on device width
       if (this.width < 640) {
         this.fontSize = 20;
-        this.columnWidth = 26;
+        this.columnWidth = 28;
       } else if (this.width < 1024) {
         this.fontSize = 22;
-        this.columnWidth = 28;
+        this.columnWidth = 30;
       } else {
         this.fontSize = 26;
-        this.columnWidth = 34;
+        this.columnWidth = 36;
       }
 
       this.numColumns = Math.floor(this.width / this.columnWidth);
@@ -82,9 +81,9 @@
         this.columns.push({
           x: i * this.columnWidth + (this.columnWidth - this.fontSize) / 2,
           y: Math.random() * -this.height, // Stagger initial start positions
-          speed: 1.2 + Math.random() * 2.2, // Random speed
+          speed: 1.0 + Math.random() * 2.0, // Graceful falling speed
           char: CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)],
-          opacity: 0.12 + Math.random() * 0.38, // Subtle opacity to avoid distracting from card
+          opacity: 0.14 + Math.random() * 0.36, // Subtle opacity to keep text clear
           glowColor: colorObj.glow,
           textColor: colorObj.text,
           changeCounter: Math.floor(Math.random() * 20),
@@ -120,9 +119,9 @@
       if (elapsed > this.frameInterval) {
         this.lastFrameTime = timestamp - (elapsed % this.frameInterval);
 
-        // Fading dark trail effect
-        // Dark navy-black with subtle transparency
-        this.ctx.fillStyle = 'rgba(13, 17, 23, 0.18)';
+        // Fading trail effect tailored for Royal Blue Light / Dark themes
+        const isLight = document.documentElement.getAttribute('data-theme') !== 'dark' && !document.body.classList.contains('theme-dark');
+        this.ctx.fillStyle = isLight ? 'rgba(240, 247, 255, 0.22)' : 'rgba(6, 11, 24, 0.20)';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
         this.ctx.font = `${this.fontSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
@@ -134,28 +133,28 @@
 
           // Periodically mutate character
           col.changeCounter++;
-          if (col.changeCounter > 15) {
+          if (col.changeCounter > 18) {
             col.char = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
             col.changeCounter = 0;
           }
 
-          // Render subtle neon glow around character
+          // Render subtle sapphire starlight glow around character
           this.ctx.save();
           this.ctx.globalAlpha = col.opacity;
           this.ctx.shadowColor = col.glowColor;
-          this.ctx.shadowBlur = 8;
+          this.ctx.shadowBlur = 10;
           
           this.ctx.fillText(col.char, col.x, col.y);
           this.ctx.restore();
 
           // Advance position
-          col.y += col.speed * 4;
+          col.y += col.speed * 3.6;
 
           // Reset when drop falls beyond the screen
           if (col.y > this.height + 40) {
             col.y = -30 - Math.random() * 60;
-            col.speed = 1.0 + Math.random() * 2.2;
-            col.opacity = 0.12 + Math.random() * 0.38;
+            col.speed = 0.9 + Math.random() * 2.0;
+            col.opacity = 0.14 + Math.random() * 0.36;
             col.char = CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
             const colorObj = ACCENT_COLORS[Math.floor(Math.random() * ACCENT_COLORS.length)];
             col.glowColor = colorObj.glow;

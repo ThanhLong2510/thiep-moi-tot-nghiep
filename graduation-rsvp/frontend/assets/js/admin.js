@@ -20,33 +20,33 @@
   // Every color the image uses. Swap this object to try another palette.
   // Current: Nordic Cyber (#0D1117 + mint #40C463 + purple #7952B3)
   const THEME = {
-    bg: ['#1c1633', '#0d1117', '#010409'],          // top -> bottom
-    orbs: ['rgba(64, 196, 99, 0.16)', 'rgba(121, 82, 179, 0.12)', 'rgba(185, 163, 224, 0.07)'],
-    orbFade: 'rgba(13, 17, 23, 0)',
-    grid: 'rgba(64, 196, 99, 0.05)',
-    glyph: '#40c463',
-    glyphHead: '#b9a3e0',
-    accent: '#40c463',
-    accentGlow: 'rgba(64, 196, 99, 0.4)',
-    status: '#86efac',
-    statusGlow: 'rgba(134, 239, 172, 0.5)',
-    chipBg: 'rgba(134, 239, 172, 0.12)',
-    halo: 'rgba(64, 196, 99, 0.22)',
-    haloFade: 'rgba(64, 196, 99, 0)',
-    avatarFill: '#161b22',
-    ring: ['#b9a3e0', '#40c463', '#7952b3'],
-    orbit: 'rgba(64, 196, 99, 0.45)',
-    title: ['#7952b3', '#d2f5dc', '#40c463'],
-    titleGlow: 'rgba(64, 196, 99, 0.3)',
-    card: ['#161b22', '#0d1117'],
-    cardShadow: 'rgba(0, 0, 0, 0.55)',
-    border: ['#b9a3e0', '#40c463', '#5a3d8a'],
-    dash: 'rgba(64, 196, 99, 0.35)',
-    quote: 'rgba(64, 196, 99, 0.18)',
-    senderGlow: 'rgba(64, 196, 99, 0.3)',
-    text: '#f0f6fc',
-    secondary: '#8b949e',
-    muted: '#6e7681'
+    bg: ['#0e1e48', '#070d24', '#020617'],          // top -> bottom
+    orbs: ['rgba(37, 99, 235, 0.22)', 'rgba(56, 189, 248, 0.18)', 'rgba(251, 191, 36, 0.12)'],
+    orbFade: 'rgba(7, 13, 36, 0)',
+    grid: 'rgba(56, 189, 248, 0.06)',
+    glyph: '#38bdf8',
+    glyphHead: '#60a5fa',
+    accent: '#38bdf8',
+    accentGlow: 'rgba(56, 189, 248, 0.45)',
+    status: '#38bdf8',
+    statusGlow: 'rgba(56, 189, 248, 0.5)',
+    chipBg: 'rgba(56, 189, 248, 0.15)',
+    halo: 'rgba(37, 99, 235, 0.28)',
+    haloFade: 'rgba(37, 99, 235, 0)',
+    avatarFill: '#0d1730',
+    ring: ['#38bdf8', '#2563eb', '#fbbf24'],
+    orbit: 'rgba(56, 189, 248, 0.45)',
+    title: ['#60a5fa', '#ffffff', '#38bdf8'],
+    titleGlow: 'rgba(56, 189, 248, 0.35)',
+    card: ['#0d1730', '#060b18'],
+    cardShadow: 'rgba(0, 0, 0, 0.65)',
+    border: ['#38bdf8', '#2563eb', '#1d4ed8'],
+    dash: 'rgba(56, 189, 248, 0.35)',
+    quote: 'rgba(56, 189, 248, 0.18)',
+    senderGlow: 'rgba(56, 189, 248, 0.35)',
+    text: '#f1f5f9',
+    secondary: '#94a3b8',
+    muted: '#64748b'
   };
 
   const FONT = {
@@ -1392,6 +1392,63 @@
     els.logoutBtn.addEventListener('click', logout);
     els.refreshAllBtn.addEventListener('click', refreshAll);
     els.regenTicketsBtn.addEventListener('click', regenTickets);
+
+    // Export CSV handler
+    const exportCsvBtn = $('export-csv-btn');
+    if (exportCsvBtn) {
+      exportCsvBtn.addEventListener('click', () => {
+        let exportData = [...guests];
+        try {
+          const localBackups = JSON.parse(localStorage.getItem('hutech_grad_rsvp_backup_entries') || '[]');
+          localBackups.forEach(lb => {
+            const exists = exportData.some(g => (g.name || '').trim().toLowerCase() === (lb.name || '').trim().toLowerCase());
+            if (!exists) {
+              exportData.push({
+                name: lb.name,
+                status: lb.status || 'Chưa rõ',
+                respondedAt: lb.respondedAt || '',
+                wish: lb.wish || '',
+                wishedAt: lb.wishedAt || '',
+                checkedIn: ''
+              });
+            }
+          });
+        } catch (e) {}
+
+        if (!exportData.length) {
+          alert('Chưa có dữ liệu khách mời nào để xuất.');
+          return;
+        }
+
+        const headers = ['STT', 'Họ Tên', 'Trạng Thái', 'Thời Gian Phản Hồi', 'Lời Chúc', 'Check-in'];
+        const csvRows = [headers.join(',')];
+
+        exportData.forEach((g, idx) => {
+          const escapeCsv = (str) => '"' + String(str || '').replace(/"/g, '""') + '"';
+          const row = [
+            idx + 1,
+            escapeCsv(g.name),
+            escapeCsv(g.status === 'Accepted' ? 'Tham dự' : (g.status === 'Declined' ? 'Từ chối' : g.status)),
+            escapeCsv(g.respondedAt || ''),
+            escapeCsv(g.wish || ''),
+            escapeCsv(g.checkedIn || '')
+          ];
+          csvRows.push(row.join(','));
+        });
+
+        // Add UTF-8 BOM so Excel displays Vietnamese correctly
+        const csvContent = '\uFEFF' + csvRows.join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Danh_Sach_Loi_Chuc_Va_Khach_Moi_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
     els.refreshBtn.addEventListener('click', refreshAll);
     els.tabButtons.forEach((btn) => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 

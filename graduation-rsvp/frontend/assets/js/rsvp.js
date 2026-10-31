@@ -49,33 +49,97 @@
     throw lastError;
   }
 
+  // Local storage backup key so names and wishes are never lost
+  const LOCAL_BACKUP_KEY = 'hutech_grad_rsvp_backup_entries';
+
+  function backupLocally(entry) {
+    try {
+      const existing = JSON.parse(localStorage.getItem(LOCAL_BACKUP_KEY) || '[]');
+      const targetName = (entry.name || '').trim().toLowerCase();
+      const idx = existing.findIndex(e => (e.name || '').trim().toLowerCase() === targetName);
+      if (idx >= 0) {
+        existing[idx] = Object.assign({}, existing[idx], entry);
+      } else {
+        existing.push(Object.assign({
+          id: existing.length + 1,
+          savedAt: new Date().toISOString()
+        }, entry));
+      }
+      localStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(existing));
+    } catch (e) {
+      console.warn('Local backup failed', e);
+    }
+  }
+
+  // Expose backup utilities to window for easy export
+  window.getGraduationRsvpsBackup = function () {
+    try {
+      return JSON.parse(localStorage.getItem(LOCAL_BACKUP_KEY) || '[]');
+    } catch (e) {
+      return [];
+    }
+  };
+
   /**
    * Send an RSVP. New names are added to the sheet; existing names are kept as-is.
    * Returns { saved: true, isNew, name } | { error }
    */
-  function submitRsvp(name, status) {
-    return postToApi({
-      action: 'rsvp',
+  async function submitRsvp(name, status) {
+    // 1. Backup to localStorage immediately
+    backupLocally({
       name: name,
-      status: status === 'confirmed' ? 'Accepted' : 'Declined'
+      status: status === 'confirmed' ? 'Accepted' : 'Declined',
+      respondedAt: new Date().toLocaleString('vi-VN')
     });
+
+    // 2. Send to Google Apps Script backend if configured
+    if (API_URL) {
+      try {
+        return await postToApi({
+          action: 'rsvp',
+          name: name,
+          status: status === 'confirmed' ? 'Accepted' : 'Declined'
+        });
+      } catch (err) {
+        console.warn('API error, relying on local backup:', err);
+        return { saved: true, isNew: true, name: name, offline: true };
+      }
+    }
+    return { saved: true, isNew: true, name: name, offline: true };
   }
 
   /** Save a guest wish on the guest's sheet row. Returns { saved: true } | { error } */
-  function submitWish(name, message) {
-    return postToApi({ action: 'wish', name: name, message: message });
+  async function submitWish(name, message) {
+    // 1. Backup to localStorage immediately
+    backupLocally({
+      name: name,
+      wish: message,
+      wishedAt: new Date().toLocaleString('vi-VN')
+    });
+
+    // 2. Send to Google Apps Script backend if configured
+    if (API_URL) {
+      try {
+        return await postToApi({ action: 'wish', name: name, message: message });
+      } catch (err) {
+        console.warn('API error for wish, saved locally:', err);
+        return { saved: true, offline: true };
+      }
+    }
+    return { saved: true, offline: true };
   }
 
   /** Store the ticket image on the host's Drive (first ticket per guest wins). Returns { saved, existed, passId } | { error } */
   function submitTicket(name, passId, image) {
-    return postToApi({ action: 'ticket', name: name, passId: passId, image: image });
+    if (!API_URL) return Promise.resolve({ saved: false });
+    return postToApi({ action: 'ticket', name: name, passId: passId, image: image }).catch(() => ({ saved: false }));
   }
 
   /* ========================================================
    * Celebration Confetti / Particle Engine
    * ======================================================== */
-  const BURST_EMOJIS = ['🎓', '✨', '🎉', '💚', '💜'];
-  const PETAL_EMOJIS = ['✨', '💚', '💜', '🍃'];
+  const BURST_EMOJIS = ['🎓', '✨', '🎉', '💙', '⭐'];
+  const PETAL_EMOJIS = ['✨', '💙', '⭐', '🕊️'];
 
   class CelebrationFX {
     constructor(canvasId) {
@@ -108,11 +172,11 @@
       const particleCount = Math.min(window.innerWidth < 640 ? 70 : 120, 140);
       
       const colors = [
-        '#40c463', // Mint
-        '#b9a3e0', // Soft purple
-        '#7952b3', // Obsidian purple
-        '#d2f5dc', // Pale mint
-        '#d4d4d8', // Platinum
+        '#1d4ed8', // Deep Royal Blue
+        '#2563eb', // Royal Sapphire
+        '#38bdf8', // Electric Azure
+        '#60a5fa', // Soft Blue
+        '#fbbf24', // Royal Gold
         '#ffffff'  // Pure star white
       ];
 
@@ -161,7 +225,7 @@
           vx: (Math.random() - 0.5) * 0.6,
           vy: 1.6 + Math.random() * 1.6,
           size: 16 + Math.random() * 12,
-          color: '#b9a3e0',
+          color: '#38bdf8',
           alpha: 1,
           decay: 0.0028 + Math.random() * 0.0018,
           rotation: Math.random() * 360,
@@ -340,9 +404,9 @@
   async function renderTicketImage(guestName, passId) {
     const W = 1600;
     const H = 800;
-    const ACCENT = '#40c463';
-    const SOFT_ACCENT = '#b9a3e0';
-    const MUTED = '#8b949e';
+    const ACCENT = '#38bdf8';
+    const SOFT_ACCENT = '#93c5fd';
+    const MUTED = '#94a3b8';
 
     // Make sure web fonts are ready before drawing text on canvas
     if (document.fonts && document.fonts.load) {
@@ -361,9 +425,9 @@
 
     // Background
     const bg = ctx.createRadialGradient(W * 0.35, 0, 50, W / 2, H * 0.4, W * 0.8);
-    bg.addColorStop(0, '#1c1633');
-    bg.addColorStop(0.55, '#0d1117');
-    bg.addColorStop(1, '#010409');
+    bg.addColorStop(0, '#172554');
+    bg.addColorStop(0.55, '#0a122c');
+    bg.addColorStop(1, '#020617');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
@@ -373,15 +437,16 @@
     const sx = cx + cw - stubW;
     const notch = 26;
     ticketPath(ctx, cx, cy, cw, ch, 36, sx, notch);
-    ctx.fillStyle = 'rgba(22, 27, 34, 0.92)';
+    ctx.fillStyle = 'rgba(10, 18, 38, 0.94)';
     ctx.fill();
     const border = ctx.createLinearGradient(cx, cy, cx + cw, cy + ch);
     border.addColorStop(0, ACCENT);
-    border.addColorStop(0.5, '#7952b3');
-    border.addColorStop(1, '#d2f5dc');
+    border.addColorStop(0.5, '#2563eb');
+    border.addColorStop(0.8, '#fbbf24');
+    border.addColorStop(1, '#60a5fa');
     ctx.lineWidth = 4;
     ctx.strokeStyle = border;
-    ctx.shadowColor = 'rgba(64, 196, 99, 0.6)';
+    ctx.shadowColor = 'rgba(37, 99, 235, 0.6)';
     ctx.shadowBlur = 30;
     ctx.stroke();
     ctx.shadowBlur = 0;
@@ -389,7 +454,7 @@
     const dashed = (xa, ya, xb, yb, alpha = 0.4) => {
       ctx.save();
       ctx.setLineDash([12, 10]);
-      ctx.strokeStyle = `rgba(64, 196, 99, ${alpha})`;
+      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(xa, ya);
@@ -424,7 +489,7 @@
     const xT = x0 + 150;
     ctx.font = '900 68px Orbitron, sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(64, 196, 99, 0.5)';
+    ctx.shadowColor = 'rgba(37, 99, 235, 0.5)';
     ctx.shadowBlur = 24;
     ctx.fillText('GRADUATION', xT, cy + 195);
     const titleGrad = ctx.createLinearGradient(xT, 0, xT + 560, 0);
@@ -456,7 +521,7 @@
       }
     }
     ctx.fillStyle = ACCENT;
-    ctx.shadowColor = 'rgba(64, 196, 99, 0.55)';
+    ctx.shadowColor = 'rgba(37, 99, 235, 0.55)';
     ctx.shadowBlur = 20;
     nameLines.forEach((line, i) => ctx.fillText(line, x0, cy + 448 + i * nameSize * 1.12));
     ctx.shadowBlur = 0;

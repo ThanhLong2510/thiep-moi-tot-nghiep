@@ -5,24 +5,24 @@
    ========================================================================== */
 
 :root {
-  --bg-page: #0d1117;
-  --bg-page-glow: #1c1633;
-  --bg-panel: #161b22;
-  --bg-input: #0d1117;
-  --bg-soft: rgba(64, 196, 99, 0.08);
-  --accent: #40c463;
-  --accent-deep: #7952b3;
-  --accent-ink: #0d1117;
-  --accent-ring: rgba(64, 196, 99, 0.22);
+  --bg-page: #060b18;
+  --bg-page-glow: #0e1e48;
+  --bg-panel: #0d1730;
+  --bg-input: #060b18;
+  --bg-soft: rgba(56, 189, 248, 0.08);
+  --accent: #38bdf8;
+  --accent-deep: #1d4ed8;
+  --accent-ink: #060b18;
+  --accent-ring: rgba(56, 189, 248, 0.25);
   --shadow: rgba(0, 0, 0, 0.55);
   --text-strong: #f0f6fc;
   --text-primary: #c9d1d9;
   --text-secondary: #8b949e;
   --text-muted: #6e7681;
-  --border-subtle: rgba(64, 196, 99, 0.18);
-  --border-input: rgba(64, 196, 99, 0.35);
+  --border-subtle: rgba(56, 189, 248, 0.2);
+  --border-input: rgba(56, 189, 248, 0.38);
   --error: #f87171;
-  --success: #86efac;
+  --success: #60a5fa;
   --radius: 14px;
   --font-display: 'Orbitron', -apple-system, sans-serif;
   --font-heading: 'Space Grotesk', -apple-system, sans-serif;
@@ -632,7 +632,7 @@ select:focus {
 
 .badge-yes {
   color: var(--accent);
-  background: rgba(64, 196, 99, 0.12);
+  background: rgba(56, 189, 248, 0.12);
 }
 
 .badge-no {
@@ -710,7 +710,7 @@ select:focus {
 .scanner-overlay {
   position: absolute;
   inset: 14%;
-  border: 2px dashed rgba(64, 196, 99, 0.55);
+  border: 2px dashed rgba(56, 189, 248, 0.55);
   border-radius: 16px;
   pointer-events: none;
   opacity: 0;
@@ -776,7 +776,7 @@ select:focus {
 
 .scan-ok {
   border-color: var(--accent);
-  background: rgba(64, 196, 99, 0.1);
+  background: rgba(56, 189, 248, 0.1);
 }
 
 .scan-already {
