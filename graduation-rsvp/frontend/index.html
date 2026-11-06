@@ -79,11 +79,6 @@
           <span class="hud-text">🎓 LỄ TỐT NGHIỆP • CLASS OF 2026</span>
         </div>
         <div class="hud-actions">
-          <button id="theme-toggle-btn" class="hud-icon-btn" aria-label="Toggle Theme"
-            title="Chuyển chế độ Nền Sáng / Nền Tối">
-            <span class="theme-icon">☀️</span>
-            <span class="theme-text">NỀN SÁNG</span>
-          </button>
           <button id="music-toggle-btn" class="hud-icon-btn" aria-label="Toggle Background Music"
             aria-pressed="false" title="Bật/Tắt nhạc nền">
             <span class="music-icon">🎵</span>
@@ -211,8 +206,8 @@
             </div>
             <div class="card-content">
               <span class="detail-label">SYS // CONTACT</span>
-              <h3 class="detail-value">0393 759 985</h3>
-              <p class="detail-sub">Kim Thanh · Gọi điện hoặc nhắn Zalo</p>
+              <h3 class="detail-value">0346 133 089</h3>
+              <p class="detail-sub">Thành Long</p>
               <div class="card-action-chip contact-menu" id="contact-menu">
                 <button type="button" class="map-link-chip contact-chip" id="contact-toggle"
                   aria-haspopup="true" aria-expanded="false" aria-controls="contact-options"
@@ -386,7 +381,7 @@
                   AM, ngày 08/11/2026!</p>
               </div>
 
-              <!-- Ticket Tech Meta & Barcode representation -->
+              <!-- Ticket details -->
               <div class="ticket-footer">
                 <div class="ticket-meta">
                   <div class="meta-item">
@@ -404,10 +399,7 @@
                 </div>
 
                 <div class="cyber-barcode">
-                  <canvas class="ticket-qr" id="ticket-qr" width="240" height="240" hidden
-                    aria-label="Mã QR check-in — đưa mã này cho người đón khách quét tại cổng"></canvas>
                   <span class="barcode-id" id="ticket-pass-id">HUT-IT-2026-PASS-XXXX</span>
-                  <span class="qr-hint">Quét mã này tại cổng để check-in</span>
                 </div>
               </div>
             </div>
@@ -415,7 +407,7 @@
             <!-- Guest Wish Box -->
             <div class="wish-box" data-wish-box>
               <div class="wish-form">
-                <label for="wish-input-confirmed" class="wish-label">💌 Để lại tâm thư ở đây nha :)))) </label>
+                <label for="wish-input-confirmed" class="wish-label">💌 Để lại vài dòng ở đây nha 🩵 🩵 🩵 </label>
                 <textarea id="wish-input-confirmed" class="wish-input" rows="3" maxlength="500"
                   placeholder="Viết vài lời chúc mừng nhé..."></textarea>
                 <div class="wish-footer">
@@ -465,7 +457,7 @@
             <!-- Guest Wish Box -->
             <div class="wish-box" data-wish-box>
               <div class="wish-form">
-                <label for="wish-input-declined" class="wish-label">💌 Để lại tâm thư ở đây nha </label>
+                <label for="wish-input-declined" class="wish-label">💌 Để lại vài dòng ở đây nha 🩵 🩵 🩵 </label>
                 <textarea id="wish-input-declined" class="wish-input" rows="3" maxlength="500"
                   placeholder="Dù không đến được, bạn vẫn có thể gửi lời chúc ở đây..."></textarea>
                 <div class="wish-footer">
@@ -542,8 +534,6 @@
   <script src="assets/js/matrix.js"></script>
   <script src="assets/js/countdown.js"></script>
   <script src="assets/js/config.js"></script>
-  <!-- QR code generator for the check-in code on the ticket -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <script src="assets/js/rsvp.js"></script>
   <script src="assets/js/main.js"></script>
 </body>

@@ -127,6 +127,15 @@
       this.audio.loop = true;
       this.audio.preload = 'auto';
       this.audio.volume = this.volume;
+      this.audio.setAttribute('playsinline', '');
+      this.audio.addEventListener('error', () => {
+        const code = this.audio.error && this.audio.error.code;
+        console.error('Background music could not be loaded.', { src, code });
+        if (window.showCyberToast) {
+          window.showCyberToast('Không đọc được file nhạc. Hãy kiểm tra định dạng MP3/MP4.');
+        }
+      });
+      this.audio.load();
 
       let pref = null;
       try { pref = localStorage.getItem(MUSIC_PREF_KEY); } catch (e) { /* storage blocked */ }
@@ -160,11 +169,14 @@
     }
 
     play() {
-      this.audio.play().then(() => {
+      return this.audio.play().then(() => {
         this.started = true;
         this.render();
+        return true;
       }).catch(() => {
-        // Blocked until a real user gesture; the next tap on the button will retry
+        console.warn('Background music playback was blocked until a user gesture.');
+        this.render();
+        return false;
       });
     }
 
@@ -196,80 +208,6 @@
       this.btn.classList.toggle('sound-active', playing);
       this.btn.setAttribute('aria-pressed', String(playing));
       this.btn.querySelector('.music-text').textContent = playing ? 'MUSIC ON' : 'MUSIC OFF';
-    }
-  }
-
-  /* ========================================================
-   * Theme Manager (Light / Dark Theme Controller)
-   * Defaults to 'light' (Nền Sáng) as requested by user.
-   * Remembers preference in localStorage.
-   * ======================================================== */
-  const THEME_PREF_KEY = 'hutech_grad_theme';
-
-  class ThemeManager {
-    constructor() {
-      this.btn = document.getElementById('theme-toggle-btn');
-      
-      let pref = 'light';
-      try {
-        pref = localStorage.getItem(THEME_PREF_KEY) || 'light';
-      } catch (e) {
-        pref = 'light';
-      }
-
-      this.currentTheme = pref;
-      this.applyTheme(this.currentTheme, false);
-
-      if (this.btn) {
-        this.btn.addEventListener('click', () => this.toggleTheme());
-      }
-    }
-
-    applyTheme(theme, showToast = true) {
-      this.currentTheme = theme;
-      document.documentElement.setAttribute('data-theme', theme);
-      if (theme === 'light') {
-        document.body.classList.remove('theme-dark');
-        document.body.classList.add('theme-light');
-      } else {
-        document.body.classList.remove('theme-light');
-        document.body.classList.add('theme-dark');
-      }
-
-      try {
-        localStorage.setItem(THEME_PREF_KEY, theme);
-      } catch (e) {
-        // Storage fallback
-      }
-
-      const metaTheme = document.getElementById('meta-theme-color');
-      if (metaTheme) {
-        metaTheme.content = theme === 'light' ? '#f0f4f8' : '#0d1117';
-      }
-
-      this.render();
-
-      if (showToast && window.showCyberToast) {
-        window.showCyberToast(theme === 'light' ? '☀️ Đã chuyển sang giao diện Nền Sáng' : '🌙 Đã chuyển sang giao diện Nền Tối');
-      }
-    }
-
-    toggleTheme() {
-      const nextTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-      if (window.SoundFX) {
-        window.SoundFX.playBeep(nextTheme === 'light' ? 920 : 540, 0.08);
-      }
-      this.applyTheme(nextTheme, true);
-    }
-
-    render() {
-      if (!this.btn) return;
-      const isLight = this.currentTheme === 'light';
-      const icon = this.btn.querySelector('.theme-icon');
-      const text = this.btn.querySelector('.theme-text');
-      if (icon) icon.textContent = isLight ? '☀️' : '🌙';
-      if (text) text.textContent = isLight ? 'NỀN SÁNG' : 'NỀN TỐI';
-      this.btn.title = isLight ? 'Đang bật Nền Sáng (Bấm để chuyển Nền Tối)' : 'Đang bật Nền Tối (Bấm để chuyển Nền Sáng)';
     }
   }
 
@@ -448,9 +386,6 @@
    * Initialize All Modules on DOM Ready
    * ======================================================== */
   document.addEventListener('DOMContentLoaded', () => {
-    // 0. Initialize Theme Controller (defaults to Light mode)
-    window.ThemeManager = new ThemeManager();
-
     // 1. Initialize Sound FX
     window.SoundFX = new CyberAudioEngine();
     window.BgMusic = new BackgroundMusic('assets/audio/nhacnen.mp4');

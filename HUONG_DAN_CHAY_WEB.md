@@ -88,7 +88,7 @@ Vào thư mục `graduation-rsvp/frontend/assets/images/`:
 
 ### 3.3. Thay Đổi Nhạc Nền
 Vào thư mục `graduation-rsvp/frontend/assets/audio/`:
-- Thay file âm thanh của bạn vào file `nhacnen.mp4` (hoặc `.mp3`).
+- Thay file âm thanh của bạn vào file `nhacnen.mp4` (hoặc `.mp3`). File `.mp4` cần chứa audio codec phổ biến như AAC; nếu trình duyệt không phát được, hãy đổi sang `.mp3` và cập nhật đường dẫn trong `main.js`.
 - Nếu dùng file nhạc có định dạng khác, mở file `graduation-rsvp/frontend/assets/js/main.js` và cập nhật lại đường dẫn file nhạc tương ứng.
 
 ---
@@ -111,13 +111,13 @@ window.APP_CONFIG = Object.freeze({
 
 ---
 
-### 3.5. Giao Diện Tông Màu Xanh Dương Hoàng Gia & Chế Độ Nền Sáng / Tối
-- Giao diện được thiết kế lại theo phong cách **Royal Sapphire Luxury (Xanh Dương Hoàng Gia & Ánh Vàng Học Thuật)**:
-  - Tông màu chủ đạo: Xanh Sapphire (`#2563eb`), Xanh Navy hoàng gia (`#1e40af`, `#0f172a`), Xanh Azure phát sáng (`#38bdf8`) kết hợp điểm nhấn ánh vàng tốt nghiệp (`#fbbf24`, `#d97706`).
-  - Nền hiệu ứng: Bầu trời sao lấp lánh (Celestial Sapphire Starlight) với các biểu tượng tốt nghiệp chuyển động êm dịu, trang trọng.
-  - Tấm vé mời điện tử (VIP Official Pass) phối màu xanh sapphire sang trọng, viền vàng pha lê.
+### 3.5. Giao Diện Sky Blue Tối Giản & Chế Độ Nền Sáng / Tối
+- Giao diện được thiết kế theo phong cách **Modern Editorial 2026**:
+  - Tông màu chủ đạo: xanh da trời nhẹ (`#edf8ff`, `#d8efff`, `#198dcc`) với nền trắng trong trẻo và điểm nhấn xanh azure.
+  - Bố cục thiệp dạng editorial card: ảnh chân dung nổi bật, typography Space Grotesk hiện đại, các khối thông tin thoáng và bo góc mềm.
+  - Hiệu ứng nền chuyển động được tiết chế để giữ cảm giác nhẹ nhàng, dễ đọc và phù hợp cả desktop lẫn mobile.
 - **Nền Sáng (Light Mode - Mặc định)**: Sắc sảo, thanh lịch, nền trắng ánh xanh băng tinh khôi.
-- **Nền Tối (Dark Mode)**: Không gian vũ trụ huyền ảo, màu xanh đêm midnight sang trọng.
+- Thiệp hiện sử dụng cố định nền sáng; không còn nút chuyển nền tối.
 - Trên thanh tiêu đề có nút **☀️ NỀN SÁNG / 🌙 NỀN TỐI** để chuyển đổi tức thì.
 
 ---

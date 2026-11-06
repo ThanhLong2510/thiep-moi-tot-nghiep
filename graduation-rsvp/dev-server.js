@@ -31,7 +31,7 @@ const TYPES = {
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
   '.mp3': 'audio/mpeg',
-  '.mp4': 'video/mp4',
+  '.mp4': 'audio/mp4',
   '.txt': 'text/plain; charset=utf-8'
 };
 
