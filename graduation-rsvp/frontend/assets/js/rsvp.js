@@ -101,11 +101,21 @@
           status: status === 'confirmed' ? 'Accepted' : 'Declined'
         });
       } catch (err) {
-        console.warn('API error, relying on local backup:', err);
-        return { saved: true, isNew: true, name: name, offline: true };
+        console.error('API error; RSVP kept only in local backup:', err);
+        return {
+          saved: false,
+          name: name,
+          offline: true,
+          error: 'Không thể kết nối máy chủ để lưu phản hồi. Vui lòng thử lại.'
+        };
       }
     }
-    return { saved: true, isNew: true, name: name, offline: true };
+    return {
+      saved: false,
+      name: name,
+      offline: true,
+      error: 'Chưa cấu hình máy chủ lưu phản hồi. Vui lòng thử lại sau.'
+    };
   }
 
   /** Save a guest wish on the guest's sheet row. Returns { saved: true } | { error } */
@@ -122,11 +132,19 @@
       try {
         return await postToApi({ action: 'wish', name: name, message: message });
       } catch (err) {
-        console.warn('API error for wish, saved locally:', err);
-        return { saved: true, offline: true };
+        console.error('API error; wish kept only in local backup:', err);
+        return {
+          saved: false,
+          offline: true,
+          error: 'Không thể kết nối máy chủ để lưu lời chúc. Vui lòng thử lại.'
+        };
       }
     }
-    return { saved: true, offline: true };
+    return {
+      saved: false,
+      offline: true,
+      error: 'Chưa cấu hình máy chủ lưu lời chúc. Vui lòng thử lại sau.'
+    };
   }
 
   /** Store the ticket image on the host's Drive (first ticket per guest wins). Returns { saved, existed, passId } | { error } */
@@ -698,7 +716,7 @@
         window.showCyberToast('💌 Đã gửi lời chúc, cảm ơn bạn!');
       } catch (err) {
         console.error('Wish error:', err);
-        this.setWishFeedback(box, 'Chưa gửi được lời chúc. Vui lòng thử lại sau ít phút.');
+        this.setWishFeedback(box, err.message || 'Chưa gửi được lời chúc. Vui lòng thử lại sau ít phút.');
         window.SoundFX && window.SoundFX.playError();
       } finally {
         sendBtn.disabled = false;
@@ -843,7 +861,7 @@
       } catch (err) {
         console.error('RSVP error:', err);
         this.setState('idle');
-        this.showFeedback('Không thể kết nối tới hệ thống. Vui lòng thử lại sau ít phút.');
+        this.showFeedback(err.message || 'Không thể kết nối tới hệ thống. Vui lòng thử lại sau ít phút.');
         window.SoundFX && window.SoundFX.playError();
       } finally {
         this.isSubmitting = false;
